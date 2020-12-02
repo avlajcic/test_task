@@ -1,0 +1,14 @@
+framework:
+    cache:
+        pools:
+            cache.redis:
+                adapter: cache.adapter.redis
+                provider: app.redis_provider
+
+services:
+    app.redis_provider:
+        class: Predis\Client
+        factory: ['Symfony\Component\Cache\Adapter\RedisAdapter', 'createConnection']
+        arguments:
+            - 'redis://localhost'
+            - { retry_interval: 2, timeout: 10 }
