@@ -1,0 +1,33 @@
+swagger: '2.0'
+info:
+  description: 'String pattern game v1 API'
+  version: '1.0'
+  title: 'String pattern game API'
+host: '127.0.0.1:8000'
+basePath: "/api/v1"
+
+tags:
+  -   name: Game
+      description: 'Game-related endpoints'
+
+paths:
+  /game:
+    post:
+      tags:
+        - Game
+      description: 'Returns if provided string value matches pattern'
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: ''
+          schema:
+            type: object
+            properties:
+              value:
+                type: string
+                description: 'Desired string value for checking if it matches the pattern'
+                example: 'DEADBEEF!'
+              required:
+                - value
