@@ -26,7 +26,7 @@ abstract class ApiController extends AbstractController
         $data = json_decode($content, true);
 
         if ($data === null) {
-            throw new \Exception('Invalid JSON format sent');
+            throw new \Exception('Invalid JSON format sent', Response::HTTP_BAD_REQUEST);
         }
 
         $clearMissing = $request->getMethod() != 'PATCH';

@@ -5,6 +5,7 @@ namespace App\Traits;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 /**
  * Class Identifiable
@@ -16,6 +17,7 @@ trait Timestampable
      * @var DateTime
      * @ORM\Column(type="datetime", nullable=false)
      * @Groups({"game_history:read"})
+     * @SerializedName("created_at")
      */
     protected DateTime $createdAt;
 

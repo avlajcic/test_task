@@ -29,4 +29,18 @@ class GameHistoryRepository extends ServiceEntityRepository
         $this->_em->persist($gameHistory);
         $this->_em->flush();
     }
+
+    /**
+     * @return array
+     */
+    public function getAllSortedByDate(): array
+    {
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
+
+        $queryBuilder->select('game_history')
+            ->from('App:GameHistory', 'game_history')
+            ->orderBy('game_history.createdAt', 'DESC');
+
+        return $queryBuilder->getQuery()->getArrayResult();
+    }
 }

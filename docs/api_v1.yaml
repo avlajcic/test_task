@@ -18,7 +18,6 @@ paths:
       description: 'Returns if provided string value matches pattern'
       produces:
         - application/json
-        - application/xml
       parameters:
         - in: body
           name: ''
@@ -31,3 +30,74 @@ paths:
                 example: 'DEADBEEF!'
               required:
                 - value
+      responses:
+        '200':
+          description: 'Checked given value and returned state'
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+        '400':
+          description: 'Bad request, invalid JSON or failed validation'
+          schema:
+            $ref: '#/definitions/ApiErrorResponse'
+        '403':
+          description: 'Game finished, access forbidden'
+          schema:
+                $ref: '#/definitions/ApiErrorResponse'
+        '500':
+          description: 'Internal server error, more info in message and errors'
+          schema:
+            $ref: '#/definitions/ApiErrorResponse'
+
+  /game-history:
+    get:
+      tags:
+        - Game history
+      description: 'Returns game history details'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 'Game history data and current state of game'
+          schema:
+            type: object
+            properties:
+              state:
+                type: boolean
+              game_history:
+                type: array
+                items:
+                  $ref: '#/definitions/GameHistoryResponse'
+        '500':
+          description: 'Internal server error, more info in message and errors'
+          schema:
+            $ref: '#/definitions/ApiErrorResponse'
+
+definitions:
+  ApiErrorResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        description: 'Error message'
+      errors:
+        type: array
+        items: string
+        description: 'Array of errors'
+      file:
+        type: string
+        description: 'Dev only. Shows file where exception was thrown from.'
+      line:
+        type: integer
+        description: 'Dev only. Shows line in the file where exception was thrown from.'
+
+  GameHistoryResponse:
+    type: object
+    properties:
+      value:
+        type: string
+      created_at:
+        type: string
+        example: '2020-12-04T19:16:24+01:00'

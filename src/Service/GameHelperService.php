@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\GameState;
 use App\Exception\ApiException;
+use App\Repository\GameHistoryRepository;
 use App\Repository\GameStateRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,7 +32,10 @@ class GameHelperService
      * @var StringCheckerService
      */
     private StringCheckerService $stringCheckerService;
-
+    /**
+     * @var GameHistoryRepository
+     */
+    private GameHistoryRepository $gameHistoryRepository;
 
     /**
      * GameHelperService constructor.
@@ -39,17 +43,20 @@ class GameHelperService
      * @param RedisService $redisService
      * @param EntityManagerInterface $entityManager
      * @param StringCheckerService $stringCheckerService
+     * @param GameHistoryRepository $gameHistoryRepository
      */
     public function __construct(
         GameStateRepository $gameStateRepository,
         RedisService $redisService,
         EntityManagerInterface $entityManager,
-        StringCheckerService $stringCheckerService
+        StringCheckerService $stringCheckerService,
+        GameHistoryRepository $gameHistoryRepository
     ) {
         $this->redisService = $redisService;
         $this->gameStateRepository = $gameStateRepository;
         $this->entityManager = $entityManager;
         $this->stringCheckerService = $stringCheckerService;
+        $this->gameHistoryRepository = $gameHistoryRepository;
     }
 
     /**
@@ -112,5 +119,18 @@ class GameHelperService
         $this->setNewGameState($isStringOkay);
 
         return $isStringOkay;
+    }
+
+    /**
+     * @return array
+     */
+    public function getGameHistory(): array
+    {
+        $cachedHistory = $this->redisService->getGameHistory();
+        if ($this->redisService->getGameHistory() !== null) {
+            return json_decode($cachedHistory, true);
+        }
+
+        return $this->gameHistoryRepository->getAllSortedByDate();
     }
 }

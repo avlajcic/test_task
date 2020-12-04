@@ -12,26 +12,11 @@ use App\Service\RedisService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class GameController extends ApiController
 {
     /**
-     * @var ValidatorInterface
-     */
-    private ValidatorInterface $validator;
-
-    /**
-     * GameController constructor.
-     * @param ValidatorInterface $validator
-     */
-    public function __construct(ValidatorInterface $validator)
-    {
-        $this->validator = $validator;
-    }
-
-    /**
-     * @Route("/game", name="v1_game")
+     * @Route("/game", name="v1_game", methods={"POST"})
      * @param Request $request
      * @param GameHistoryFactory $gameHistoryFactory
      * @param RedisService $redisService
@@ -40,6 +25,7 @@ class GameController extends ApiController
      * @throws ApiException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Exception
      */
     public function game(
         Request $request,
