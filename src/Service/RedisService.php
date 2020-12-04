@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\Entity\GameHistory;
 use Predis\Client;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -12,14 +14,15 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class RedisService
 {
-    const GAME_HISTORY_KEY = 'game:history';
-    const GAME_STATE_KEY = 'game:state';
-    const GAME_VALUE_KEY_PREFIX = 'game:value:';
+    private const GAME_HISTORY_KEY = 'game:history';
+    private const GAME_STATE_KEY = 'game:state';
+    private const GAME_VALUE_KEY_PREFIX = 'game:value:';
 
     /**
-     * @var Client
+     * @var Client<Client>
      */
     private Client $redis;
+
     /**
      * @var SerializerInterface
      */
@@ -27,7 +30,7 @@ class RedisService
 
     /**
      * RedisService constructor.
-     * @param Client $redis
+     * @param Client<Client> $redis
      * @param SerializerInterface $serializer
      */
     public function __construct(Client $redis, SerializerInterface $serializer)
@@ -45,12 +48,12 @@ class RedisService
             $gameHistory,
             null,
             [
-                'groups'=> ["game_history:read"]
+                'groups' => ["game_history:read"]
             ]
         );
 
         if ($this->redis->exists(self::GAME_HISTORY_KEY)) {
-            $historyContent = json_decode($this->redis->get(self::GAME_HISTORY_KEY), true);
+            $historyContent = json_decode((string)$this->redis->get(self::GAME_HISTORY_KEY), true);
             if ($historyContent) {
                 array_unshift($historyContent, $gameHistoryNormalized);
             }
@@ -64,7 +67,7 @@ class RedisService
     }
 
     /**
-     * @return array|null
+     * @return string
      */
     public function getGameHistory(): ?string
     {
@@ -118,5 +121,10 @@ class RedisService
         }
 
         return null;
+    }
+
+    public function resetRedis(): void
+    {
+        $this->redis->flushall();
     }
 }

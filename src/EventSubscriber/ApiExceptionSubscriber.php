@@ -16,9 +16,6 @@ use Symfony\Component\Serializer\SerializerInterface;
  */
 class ApiExceptionSubscriber implements EventSubscriberInterface
 {
-    const CONTENT_TYPE_JSON = 'application/json';
-    const CONTENT_TYPE_XML = 'application/xml';
-
     /**
      * @var SerializerInterface
      */
@@ -31,8 +28,9 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
 
     /**
      * {@inheritdoc}
+     * @return array<string>
      */
-    public static function getSubscribedEvents() : array
+    public static function getSubscribedEvents(): array
     {
         return array(
             KernelEvents::EXCEPTION => 'onKernelException'
@@ -50,7 +48,10 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
         $this->env = $env;
     }
 
-    public function onKernelException(ExceptionEvent $event)
+    /**
+     * @param ExceptionEvent $event
+     */
+    public function onKernelException(ExceptionEvent $event): void
     {
         // only take care of /api URLs
         if (strpos($event->getRequest()->getPathInfo(), '/api') !== 0) {
@@ -69,6 +70,10 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
         $event->setResponse($response);
     }
 
+    /**
+     * @param \Throwable $throwable
+     * @return array<mixed>
+     */
     private function getExceptionAsArray(\Throwable $throwable): array
     {
         $exceptionArray = [

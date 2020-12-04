@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Exception\ApiException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +18,7 @@ abstract class ApiController extends AbstractController
 {
     /**
      * @param Request $request
-     * @param FormInterface $form
+     * @param FormInterface<Form> $form
      * @throws \Exception
      */
     public function processForm(Request $request, FormInterface $form): void
@@ -35,7 +37,7 @@ abstract class ApiController extends AbstractController
     }
 
     /**
-     * @param FormInterface $form
+     * @param FormInterface<Form> $form
      * @throws ApiException
      */
     public function throwFormValidationException(FormInterface $form): void
@@ -47,7 +49,7 @@ abstract class ApiController extends AbstractController
 
     /**
      * @param Request $request
-     * @return array
+     * @return array<object>
      * @throws \Exception
      */
     public function getDataFromRequest(Request $request): array
@@ -62,10 +64,16 @@ abstract class ApiController extends AbstractController
 
         return $data;
     }
-    private function getErrorsFromForm(FormInterface $form) : array
+
+    /**
+     * @param FormInterface<Form> $form
+     * @return array<mixed>.
+     */
+    private function getErrorsFromForm(FormInterface $form): array
     {
         $errors = array();
 
+        /** @var FormError $error */
         foreach ($form->getErrors() as $error) {
             $errors[] = $error->getMessage();
         }

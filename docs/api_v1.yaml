@@ -51,6 +51,21 @@ paths:
           schema:
             $ref: '#/definitions/ApiErrorResponse'
 
+  /reset:
+    get:
+      tags:
+        - Game
+      description: 'Returns game history details'
+      produces:
+        - application/json
+      responses:
+        '204':
+          description: 'No content. Reset was successful'
+        '500':
+          description: 'Internal server error, more info in message and errors'
+          schema:
+            $ref: '#/definitions/ApiErrorResponse'
+
   /game-history:
     get:
       tags:

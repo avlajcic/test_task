@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\GameHistory;
 use App\Entity\GameState;
 use App\Exception\ApiException;
 use App\Repository\GameHistoryRepository;
@@ -122,15 +123,38 @@ class GameHelperService
     }
 
     /**
-     * @return array
+     * @return array<GameHistory>
      */
     public function getGameHistory(): array
     {
         $cachedHistory = $this->redisService->getGameHistory();
-        if ($this->redisService->getGameHistory() !== null) {
+        if ($cachedHistory !== null) {
             return json_decode($cachedHistory, true);
         }
 
         return $this->gameHistoryRepository->getAllSortedByDate();
+    }
+
+    /**
+     * @throws ApiException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function resetGame(): void
+    {
+        $this->redisService->resetRedis();
+        $gameState = $this->gameStateRepository->findOneBy([
+            'key' => GameState::GAME_STATE_KEY
+        ]);
+
+        if (!$gameState) {
+            throw new ApiException('Game state not set', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $this->gameHistoryRepository->removeAll();
+
+        $gameState->setState(false);
+        $this->entityManager->persist($gameState);
+        $this->entityManager->flush();
     }
 }

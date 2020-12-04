@@ -24,14 +24,14 @@ class GameHistoryRepository extends ServiceEntityRepository
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function save(GameHistory $gameHistory)
+    public function save(GameHistory $gameHistory): void
     {
         $this->_em->persist($gameHistory);
         $this->_em->flush();
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function getAllSortedByDate(): array
     {
@@ -41,6 +41,14 @@ class GameHistoryRepository extends ServiceEntityRepository
             ->from('App:GameHistory', 'game_history')
             ->orderBy('game_history.createdAt', 'DESC');
 
-        return $queryBuilder->getQuery()->getArrayResult();
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function removeAll(): void
+    {
+        $queryBuilder = $this->getEntityManager()->createQueryBuilder();
+
+        $queryBuilder->delete('App:GameHistory');
+        $queryBuilder->getQuery()->execute();
     }
 }

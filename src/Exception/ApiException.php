@@ -8,13 +8,16 @@ namespace App\Exception;
  */
 class ApiException extends \Exception
 {
+    /**
+     * @var array<mixed>
+     */
     private array $errors;
 
     /**
      * ApiException constructor.
      * @param string $message
      * @param int $code
-     * @param array $errors
+     * @param array<mixed> $errors
      */
     public function __construct(string $message, int $code = 500, array $errors = [])
     {
@@ -23,11 +26,10 @@ class ApiException extends \Exception
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function getErrors(): array
     {
         return $this->errors;
     }
-
 }

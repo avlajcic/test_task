@@ -59,4 +59,21 @@ class GameController extends ApiController
             'ok' => $isStringOkay,
         ]);
     }
+
+    /**
+     * @Route("/reset", name="v1_game_reset", methods={"GET"})
+     * @param GameHelperService $gameHelperService
+     * @return Response
+     * @throws ApiException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function reset(
+        GameHelperService $gameHelperService
+    ): Response {
+
+        $gameHelperService->resetGame();
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
+    }
 }
