@@ -3,9 +3,12 @@
 namespace App\Controller\v1;
 
 use App\Controller\ApiController;
+use App\Exception\ApiException;
+use App\Factory\GameHistoryFactory;
 use App\Form\GameRequestType;
 use App\Request\GameRequest;
-use App\Service\StringCheckerService;
+use App\Service\GameHelperService;
+use App\Service\RedisService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -30,12 +33,25 @@ class GameController extends ApiController
     /**
      * @Route("/game", name="v1_game")
      * @param Request $request
-     * @param StringCheckerService $stringCheckerService
+     * @param GameHistoryFactory $gameHistoryFactory
+     * @param RedisService $redisService
+     * @param GameHelperService $gameHelperService
      * @return Response
-     * @throws \Exception
+     * @throws ApiException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function game(Request $request, StringCheckerService $stringCheckerService): Response
-    {
+    public function game(
+        Request $request,
+        GameHistoryFactory $gameHistoryFactory,
+        RedisService $redisService,
+        GameHelperService $gameHelperService
+    ): Response {
+
+        if ($gameHelperService->getCurrentGameState() === true) {
+            throw new ApiException('Game is finished', Response::HTTP_FORBIDDEN);
+        }
+
         $gameRequest = new GameRequest();
         $form = $this->createForm(
             GameRequestType::class,
@@ -45,10 +61,13 @@ class GameController extends ApiController
         $this->processForm($request, $form);
 
         if (!$form->isValid()) {
-            throw new \Exception('Invalid data sent');
+            $this->throwFormValidationException($form);
         }
 
-        $isStringOkay = $stringCheckerService->doesStringMatchPattern($gameRequest->value);
+        $gameHistory = $gameHistoryFactory->createFromGameRequest($gameRequest);
+        $redisService->saveNewGameHistory($gameHistory);
+
+        $isStringOkay = $gameHelperService->getStateForValue($gameRequest->value);
 
         return $this->json([
             'ok' => $isStringOkay,

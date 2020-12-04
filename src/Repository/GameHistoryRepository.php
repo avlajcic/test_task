@@ -19,32 +19,14 @@ class GameHistoryRepository extends ServiceEntityRepository
         parent::__construct($registry, GameHistory::class);
     }
 
-    // /**
-    //  * @return GameHistory[] Returns an array of GameHistory objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param GameHistory $gameHistory
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function save(GameHistory $gameHistory)
     {
-        return $this->createQueryBuilder('g')
-            ->andWhere('g.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('g.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $this->_em->persist($gameHistory);
+        $this->_em->flush();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?GameHistory
-    {
-        return $this->createQueryBuilder('g')
-            ->andWhere('g.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
