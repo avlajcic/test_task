@@ -150,6 +150,9 @@
             "ref": "2becca99cc83c0e6d2ad68875fa84c516298dec4"
         }
     },
+    "symfony/browser-kit": {
+        "version": "v4.4.17"
+    },
     "symfony/cache": {
         "version": "v4.4.17"
     },
@@ -172,6 +175,9 @@
             "./config/bootstrap.php"
         ]
     },
+    "symfony/css-selector": {
+        "version": "v4.4.17"
+    },
     "symfony/debug": {
         "version": "v4.4.17"
     },
@@ -182,6 +188,9 @@
         "version": "v2.2.0"
     },
     "symfony/doctrine-bridge": {
+        "version": "v4.4.17"
+    },
+    "symfony/dom-crawler": {
         "version": "v4.4.17"
     },
     "symfony/dotenv": {

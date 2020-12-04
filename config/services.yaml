@@ -29,6 +29,8 @@ services:
 
     Predis\Client: '@app.redis_provider'
 
+    redis_service: '@App\Service\RedisService'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
