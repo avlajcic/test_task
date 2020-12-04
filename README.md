@@ -26,7 +26,7 @@ symfony server:start
 
 ## Documentation
 
-API documentation is available on /api/docs
+API documentation is available on /docs
 
 ## Future work
 * Add missing tests for GameHelperService and RedisService
