@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Form;
+
+use App\Request\GameRequest;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilder;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+/**
+ * Class GameRequestType
+ * @package App\Form
+ */
+class GameRequestType extends AbstractType
+{
+    /**
+     * {@inheritdoc}
+     * @param FormBuilderInterface<FormBuilder> $builder
+     * @param array<mixed> $options
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('value');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults(array(
+            'data_class' => GameRequest::class
+        ));
+    }
+}

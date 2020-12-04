@@ -1,0 +1,118 @@
+swagger: '2.0'
+info:
+  description: 'String pattern game v1 API'
+  version: '1.0'
+  title: 'String pattern game API'
+host: '127.0.0.1:8000'
+basePath: "/api/v1"
+
+tags:
+  -   name: Game
+      description: 'Game-related endpoints'
+
+paths:
+  /game:
+    post:
+      tags:
+        - Game
+      description: 'Returns if provided string value matches pattern'
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: ''
+          schema:
+            type: object
+            properties:
+              value:
+                type: string
+                description: 'Desired string value for checking if it matches the pattern'
+                example: 'DEADBEEF!'
+              required:
+                - value
+      responses:
+        '200':
+          description: 'Checked given value and returned state'
+          schema:
+            type: object
+            properties:
+              ok:
+                type: boolean
+        '400':
+          description: 'Bad request, invalid JSON or failed validation'
+          schema:
+            $ref: '#/definitions/ApiErrorResponse'
+        '403':
+          description: 'Game finished, access forbidden'
+          schema:
+                $ref: '#/definitions/ApiErrorResponse'
+        '500':
+          description: 'Internal server error, more info in message and errors'
+          schema:
+            $ref: '#/definitions/ApiErrorResponse'
+
+  /reset:
+    get:
+      tags:
+        - Game
+      description: 'Returns game history details'
+      produces:
+        - application/json
+      responses:
+        '204':
+          description: 'No content. Reset was successful'
+        '500':
+          description: 'Internal server error, more info in message and errors'
+          schema:
+            $ref: '#/definitions/ApiErrorResponse'
+
+  /game-history:
+    get:
+      tags:
+        - Game history
+      description: 'Returns game history details'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 'Game history data and current state of game'
+          schema:
+            type: object
+            properties:
+              state:
+                type: boolean
+              game_history:
+                type: array
+                items:
+                  $ref: '#/definitions/GameHistoryResponse'
+        '500':
+          description: 'Internal server error, more info in message and errors'
+          schema:
+            $ref: '#/definitions/ApiErrorResponse'
+
+definitions:
+  ApiErrorResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        description: 'Error message'
+      errors:
+        type: array
+        items: string
+        description: 'Array of errors'
+      file:
+        type: string
+        description: 'Dev only. Shows file where exception was thrown from.'
+      line:
+        type: integer
+        description: 'Dev only. Shows line in the file where exception was thrown from.'
+
+  GameHistoryResponse:
+    type: object
+    properties:
+      value:
+        type: string
+      created_at:
+        type: string
+        example: '2020-12-04T19:16:24+01:00'

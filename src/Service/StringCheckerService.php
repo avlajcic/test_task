@@ -11,7 +11,7 @@ class StringCheckerService
     /**
      * @var string[]
      */
-    private static $patternLetters = ['a', 'e', 'i', 'o', 'u'];
+    private static array $patternLetters = ['a', 'e', 'i', 'o', 'u'];
 
     public function doesStringMatchPattern(string $value): bool
     {
