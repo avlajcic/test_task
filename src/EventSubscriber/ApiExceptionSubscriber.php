@@ -3,6 +3,7 @@
 namespace App\EventSubscriber;
 
 use App\Exception\ApiException;
+use Bugsnag\Client;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +26,10 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
      * @var string
      */
     private string $env;
+    /**
+     * @var Client
+     */
+    private Client $bugsnag;
 
     /**
      * {@inheritdoc}
@@ -41,11 +46,13 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
      * ApiExceptionSubscriber constructor.
      * @param SerializerInterface $serializer
      * @param string $env
+     * @param Client $bugsnag
      */
-    public function __construct(SerializerInterface $serializer, string $env)
+    public function __construct(SerializerInterface $serializer, string $env, Client $bugsnag)
     {
         $this->serializer = $serializer;
         $this->env = $env;
+        $this->bugsnag = $bugsnag;
     }
 
     /**
@@ -59,13 +66,17 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
         }
 
         $exception = $event->getThrowable();
+        $statusCode = $exception->getCode() ? $exception->getCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
+
+        if ($statusCode == Response::HTTP_INTERNAL_SERVER_ERROR) {
+            $this->bugsnag->notifyException($exception);
+        }
 
         $response = new JsonResponse(
             $this->getExceptionAsArray($exception),
-            $exception->getCode() ? $exception->getCode() : Response::HTTP_INTERNAL_SERVER_ERROR
+            $statusCode
         );
         $response->headers->set('Content-Type', 'application/json');
-
 
         $event->setResponse($response);
     }
